@@ -23,6 +23,14 @@ This will serve up a local server using etags for cache control
 - the problem does not occur when etags are disabled
 - the problem does not occur using async xmlhttp or fetch
 
+## Public example
+
+The login page at <https://businessportal.apsmos.com/> uses the dojo js framework. This framework uses synchronous xmlhttprequests to resolve its dependencies. The problem reproduces after a few refreshes.
+
+Note that in response to the empty response, dojo's fallback resource loading mechanism is triggered, which results in a bunch of 404's. The underlying problem however, is the empty cache response.
+
+Also note that the "disable cache while devtools is open" feature of chrome dev tools should be disabled.
+
 ## Chromium issue reference
 
 <https://code.google.com/p/chromium/issues/detail?id=570622>
