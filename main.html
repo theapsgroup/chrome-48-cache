@@ -1,0 +1,89 @@
+<div><button onclick="display('res1')(getSync('test'));">Sync</button> <span id="res1"></span></div>
+<div><button onclick="getAsync('test').then(display('res2'));">Async</button> <span id="res2"></span></div>
+<div><button onclick="getFetch('test').then(display('res3'));">Fetch</button> <span id="res3"></span></div>
+
+<div>
+    <p>Expected: sync loads ok</p>
+    <p>Observed: sync loads with empty response after it has been cached</p>
+    <ul>
+        <li>This problem occurs when working with weak and strong etags.</li>
+        <li>Observed in 48.0.2564.41 beta-m (64-bit)</li>
+    </ul>
+</div>
+
+<h1>Source</h1>
+<pre><code>
+    function getSync(path) {
+        var r = new XMLHttpRequest();
+        r.open("GET", path, false);
+        r.send(null);
+        return r.responseText;
+    }
+
+    function getAsync(path) {
+        return new Promise(function(resolve,reject) {
+            var r = new XMLHttpRequest();
+            r.open("GET", path, true);
+            r.onreadystatechange = function() {
+                if (r.readyState === 4) {
+                    resolve(r.responseText);
+                }
+            };
+            r.send(null);
+        });
+    }
+
+    function getFetch(path) {
+        return fetch(path).then(function(res) {
+            return res.text();
+        });
+    }
+
+    function display(target) {
+        return function(response) {
+            if (response == '') {
+                console.error('empty response received');
+                response = '(empty)';
+            }
+            document.getElementById(target).innerHTML = response;
+        }
+    }
+</code></pre>
+
+<script>
+    function getSync(path) {
+        var r = new XMLHttpRequest();
+        r.open("GET", path, false);
+        r.send(null);
+        return r.responseText;
+    }
+
+    function getAsync(path) {
+        return new Promise(function(resolve,reject) {
+            var r = new XMLHttpRequest();
+            r.open("GET", path, true);
+            r.onreadystatechange = function() {
+                if (r.readyState === 4) {
+                    resolve(r.responseText);
+                }
+            };
+            r.send(null);
+        });
+    }
+
+    function getFetch(path) {
+        return fetch(path).then(function(res) {
+            return res.text();
+        });
+    }
+
+    function display(target) {
+        return function(response) {
+            if (response == '') {
+                console.error('empty response received');
+                response = '(empty)';
+            }
+            document.getElementById(target).innerHTML = response;
+        }
+    }
+</script>
